@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>拼拼熊大冒险 | PinPin Panda</title>
+<style>
+:root{
+  --gold:#ffd166;--cyan:#66e3ff;--pink:#ff6b9d;--green:#7ee081;--dark:#071026;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;height:100vh;overflow:hidden;
+  font-family:"KaiTi","STKaiti","楷体","KaiTi_GB2312",system-ui,sans-serif;
+  background:radial-gradient(circle at top,#284b82 0%,#091329 55%,#050814 100%);
+  color:white;
+}
+.screen{position:absolute;inset:0;display:none;padding:22px}
+.screen.active{display:block}
+.bg-layer{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.star{position:absolute;width:4px;height:4px;border-radius:50%;background:white;opacity:.75;animation:twinkle 2s infinite alternate}
+@keyframes twinkle{from{transform:scale(.7);opacity:.35}to{transform:scale(1.5);opacity:1}}
+.cloud{position:absolute;font-size:52px;opacity:.22;animation:drift linear infinite}
+@keyframes drift{from{transform:translateX(-15vw)}to{transform:translateX(115vw)}}
+.panel{
+  position:relative;z-index:2;width:min(980px,92vw);margin:0 auto;top:50%;transform:translateY(-50%);
+  background:linear-gradient(145deg,rgba(255,255,255,.16),rgba(255,255,255,.06));
+  border:1px solid rgba(255,255,255,.25);border-radius:30px;
+  box-shadow:0 24px 70px rgba(0,0,0,.38);backdrop-filter:blur(14px);padding:30px
+}
+.title{font-size:54px;text-align:center;margin:0 0 6px;text-shadow:0 6px 0 rgba(0,0,0,.2)}
+.sub{text-align:center;opacity:.92;font-family:system-ui,sans-serif;margin-bottom:24px}
+.formGrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px auto;max-width:660px}
+label{font-size:22px}
+select,.nameInput{
+  width:100%;border:0;outline:0;border-radius:15px;padding:13px 15px;font-size:20px;
+  font-family:system-ui,sans-serif;background:white;color:#152238;margin-top:8px
+}
+.btnrow{display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
+button{
+  border:0;cursor:pointer;border-radius:18px;padding:16px 28px;font-size:23px;
+  font-family:"KaiTi","STKaiti","楷体",sans-serif;font-weight:700;
+  background:linear-gradient(180deg,#ffe58b,#ffb703);color:#1b1b1b;
+  box-shadow:0 8px 0 #a86400,0 16px 28px rgba(0,0,0,.25);transition:.15s transform,.15s filter
+}
+button:hover{transform:translateY(-3px);filter:brightness(1.08)}
+button:active{transform:translateY(5px);box-shadow:0 3px 0 #a86400,0 8px 18px rgba(0,0,0,.25)}
+.smallbtn{font-size:18px;padding:10px 16px;border-radius:14px}
+.ghostBtn{background:linear-gradient(180deg,#e8f7ff,#91ddff);box-shadow:0 8px 0 #247aa1,0 16px 28px rgba(0,0,0,.25)}
+.map{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px}
+.card{
+  min-height:190px;border-radius:24px;padding:18px;position:relative;overflow:hidden;
+  border:1px solid rgba(255,255,255,.22);box-shadow:0 12px 34px rgba(0,0,0,.25);cursor:pointer
+}
+.card h2{margin:0;font-size:30px}.card p{font-family:system-ui,sans-serif;opacity:.9}
+.forest{background:linear-gradient(160deg,#1b6b59,#6bd17d)}
+.maze{background:linear-gradient(160deg,#45257a,#f26b8a)}
+.space{background:linear-gradient(160deg,#15164b,#4a9dff)}
+.card .emoji{position:absolute;right:16px;bottom:8px;font-size:72px;animation:bob 1.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-13px)}}
+.hud{
+  position:absolute;left:24px;right:24px;bottom:20px;z-index:8;
+  display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;
+  background:rgba(8,16,37,.76);border:1px solid rgba(255,255,255,.22);
+  border-radius:22px;padding:14px 18px;backdrop-filter:blur(10px)
+}
+.qbox{display:flex;align-items:center;gap:18px}
+.word{
+  font-size:50px;min-width:132px;max-width:240px;text-align:center;color:#fff2a8;
+  text-shadow:0 4px 0 rgba(0,0,0,.25);line-height:1.1
+}
+.answerInput{
+  width:100%;max-width:420px;border:0;outline:0;border-radius:15px;padding:14px 18px;font-size:25px;
+  font-family:system-ui,sans-serif;background:white;color:#152238
+}
+.topbar{position:absolute;top:16px;left:18px;right:18px;z-index:8;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.pill{background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:10px 16px;font-family:system-ui,sans-serif}
+.scene{position:absolute;inset:0;overflow:hidden}
+.hill{position:absolute;left:-5%;bottom:-12%;width:110%;height:34%;border-radius:50% 50% 0 0;background:linear-gradient(#42b866,#176c43)}
+.tree{position:absolute;bottom:18%;font-size:64px;animation:sway 2s ease-in-out infinite alternate}
+@keyframes sway{to{transform:rotate(3deg)}}
+.butterfly{position:absolute;font-size:28px;animation:fly 9s linear infinite;opacity:.9}
+@keyframes fly{from{transform:translateX(-10vw) translateY(0)}50%{transform:translateX(50vw) translateY(-40px)}to{transform:translateX(110vw) translateY(12px)}}
+.balloon{
+  position:absolute;left:48%;top:32%;width:130px;height:155px;border-radius:50% 50% 47% 47%;
+  background:radial-gradient(circle at 35% 25%,#fff 0 7%,#ff83ad 8%,#e62f6b 70%);
+  box-shadow:0 0 40px rgba(255,80,140,.5);animation:float 2.6s ease-in-out infinite
+}
+.balloon:after{content:"";position:absolute;left:50%;bottom:-30px;width:2px;height:42px;background:rgba(255,255,255,.65)}
+.balloon .char{position:absolute;inset:0;display:grid;place-items:center;font-size:62px;color:white;text-shadow:0 3px 0 rgba(0,0,0,.22)}
+@keyframes float{0%,100%{transform:translate(-50%,0) rotate(-3deg)}50%{transform:translate(calc(-50% + 18px),-20px) rotate(4deg)}}
+.danger .balloon{animation:float .55s ease-in-out infinite,pulse .4s infinite alternate}
+@keyframes pulse{to{filter:saturate(1.5);transform:translate(-50%,-10px) scale(1.12)}}
+.mazePath{
+  position:absolute;left:0;right:0;top:46%;height:110px;
+  background:repeating-linear-gradient(90deg,#29194f 0 70px,#3d2871 70px 140px);
+  box-shadow:0 0 0 6px rgba(255,255,255,.08),inset 0 22px 0 rgba(255,255,255,.05);animation:road 1.15s linear infinite
+}
+@keyframes road{to{background-position:-140px 0}}
+.runner{position:absolute;top:42%;font-size:74px;z-index:3;animation:runbob .28s ease-in-out infinite alternate}
+.panda{left:33%}.monster{left:8%;filter:drop-shadow(0 0 20px #ff6b9d)}
+@keyframes runbob{to{transform:translateY(-10px)}}
+.distance{
+  position:absolute;top:84px;left:50%;transform:translateX(-50%);
+  width:min(560px,76vw);height:26px;border-radius:99px;
+  background:rgba(255,255,255,.18);overflow:hidden;z-index:8;
+  border:1px solid rgba(255,255,255,.25);box-shadow:0 8px 28px rgba(0,0,0,.25)
+}
+.distance div{
+  height:100%;width:100%;background:linear-gradient(90deg,#7ee081,#ffd166,#ff4d6d);
+  border-radius:99px;transition:width .35s linear,filter .2s
+}
+.distance.dangerBar{box-shadow:0 0 26px rgba(255,77,109,.75)}
+.distance.dangerBar div{filter:saturate(1.7) brightness(1.12)}
+.chaseLabel,.spaceLabel{
+  position:absolute;top:118px;left:50%;transform:translateX(-50%);
+  font:700 17px system-ui;color:#fff2a8;text-shadow:0 3px 0 rgba(0,0,0,.25);z-index:8
+}
+.chaseDanger{
+  position:absolute;inset:0;pointer-events:none;z-index:4;
+  background:radial-gradient(circle,transparent 45%,rgba(255,40,70,.28) 100%);
+  opacity:0;transition:opacity .2s
+}
+.chaseDanger.on{opacity:1;animation:redPulse .45s infinite alternate}
+@keyframes redPulse{to{opacity:.55}}
+.panda,.monster{transition:left .35s linear,transform .15s}
+.monster.close{filter:drop-shadow(0 0 26px #ff365c);transform:scale(1.15)}
+.panda.scared{filter:drop-shadow(0 0 18px #ffd166)}
+.spaceBar{
+  position:absolute;top:84px;left:50%;transform:translateX(-50%);
+  width:min(560px,76vw);height:26px;border-radius:99px;
+  background:rgba(255,255,255,.18);overflow:hidden;z-index:8;
+  border:1px solid rgba(255,255,255,.25);box-shadow:0 8px 28px rgba(0,0,0,.25)
+}
+.spaceBar div{height:100%;width:100%;background:linear-gradient(90deg,#66e3ff,#ffd166,#ff4d6d);border-radius:99px;transition:width .25s linear}
+.rocket{position:absolute;left:15%;top:44%;font-size:82px;animation:rocket 1s ease-in-out infinite alternate}
+@keyframes rocket{to{transform:translateY(-18px) rotate(-4deg)}}
+.laser{
+  position:absolute;left:23%;top:49%;height:8px;width:0;background:linear-gradient(90deg,#66e3ff,#fff);
+  border-radius:999px;box-shadow:0 0 18px #66e3ff;z-index:5;opacity:0
+}
+.laser.fire{animation:laserFire .28s ease-out}
+@keyframes laserFire{0%{width:0;opacity:1}70%{width:55vw;opacity:1}100%{width:55vw;opacity:0}}
+.meteor{
+  position:absolute;right:12%;top:34%;font-size:86px;
+  transition:right .25s linear,transform .2s,filter .2s,opacity .2s;
+  animation:meteorSpin 1.4s linear infinite
+}
+@keyframes meteorSpin{to{transform:rotate(-360deg)}}
+.meteor.warningMeteor{filter:drop-shadow(0 0 28px #ff4d6d);transform:scale(1.16)}
+.warning{position:absolute;top:90px;right:25px;color:#ffdc5e;font:700 24px system-ui;animation:blink .55s infinite alternate}
+@keyframes blink{to{opacity:.25}}
+.fx{position:absolute;inset:0;pointer-events:none;z-index:9}
+.particle{position:absolute;width:12px;height:12px;border-radius:50%;background:#ffd166;animation:pop .75s ease-out forwards}
+@keyframes pop{to{transform:translate(var(--x),var(--y)) scale(.2);opacity:0}}
+.toast{position:absolute;top:23%;left:50%;transform:translateX(-50%);z-index:12;font-size:38px;color:#fff2a8;text-shadow:0 5px 0 rgba(0,0,0,.25);opacity:0;text-align:center}
+.toast.show{animation:toast .9s ease-out}
+@keyframes toast{0%{opacity:0;transform:translate(-50%,20px) scale(.8)}20%,70%{opacity:1;transform:translate(-50%,0) scale(1.1)}100%{opacity:0;transform:translate(-50%,-20px) scale(1)}}
+.shake{animation:shake .28s}
+@keyframes shake{20%{transform:translate(8px,-4px)}40%{transform:translate(-8px,5px)}60%{transform:translate(6px,4px)}80%{transform:translate(-5px,-4px)}}
+.reportPanel{
+  position:relative;z-index:3;width:min(1000px,94vw);height:calc(100vh - 48px);margin:0 auto;
+  background:linear-gradient(145deg,rgba(255,255,255,.16),rgba(255,255,255,.06));
+  border:1px solid rgba(255,255,255,.25);border-radius:28px;box-shadow:0 24px 70px rgba(0,0,0,.38);
+  backdrop-filter:blur(14px);padding:24px;overflow:auto
+}
+.reportGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:12px 0}
+.stat{background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.15);border-radius:18px;padding:14px;text-align:center;font-family:system-ui,sans-serif}
+.review{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:14px}
+.reviewCard{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:18px;padding:14px}
+.reviewCard .han{font-size:34px;color:#fff2a8}.reviewCard .pin{font:700 18px system-ui;color:#dff7ff}
+.notice{font-family:system-ui,sans-serif;color:#fff2a8;text-align:center;margin-top:10px}
+@media(max-width:720px){
+  .title{font-size:38px}.map,.formGrid,.reportGrid{grid-template-columns:1fr}.panel{padding:20px;top:48%}.hud{grid-template-columns:1fr;bottom:12px}.word{font-size:42px}.qbox{flex-direction:column}.topbar{font-size:12px}.pill{padding:8px 10px}
+}
+</style>
+</head>
+<body>
+<div class="bg-layer" id="stars"></div>
+
+<section id="start" class="screen active">
+  <div class="panel">
+    <h1 class="title">拼拼熊大冒险</h1>
+    <div class="sub">练汉字 · 练拼音 · 练打字</div>
+    <div class="formGrid">
+      <label>姓名
+        <input class="nameInput" id="studentName" placeholder="请输入姓名" />
+      </label>
+      <label>班级
+        <select id="studentClass">
+          <option value="P1 CL1">P1 CL1</option>
+          <option value="P1 CL2">P1 CL2</option>
+          <option value="P1 CL3">P1 CL3</option>
+          <option value="P1 CL4">P1 CL4</option>
+          <option value="P1 CL5">P1 CL5</option>
+          <option value="P2 CL1">P2 CL1</option>
+          <option value="P2 CL2">P2 CL2</option>
+          <option value="P2 CL3">P2 CL3</option>
+          <option value="P2 CL4">P2 CL4</option>
+        </select>
+      </label>
+    </div>
+    <div class="btnrow">
+      <button onclick="showMap('P1')">一年级冒险</button>
+      <button onclick="showMap('P2')">二年级冒险</button>
+    </div>
+    <div class="notice">准备好了吗？我们一起出发！</div>
+  </div>
+</section>
+
+<section id="map" class="screen">
+  <div class="panel">
+    <h1 class="title" style="font-size:42px">选择关卡</h1>
+    <div class="sub" id="gradeNote">请选择要挑战的关卡！</div>
+    <div class="map">
+      <div class="card forest" onclick="startLevel(1)"><h2>第一关</h2><p>输入拼音，让气球飞走！</p><div class="emoji">🎈</div></div>
+      <div class="card maze" onclick="startLevel(2)"><h2>第二关</h2><p>快帮助拼拼熊逃离小怪！</p><div class="emoji">🐼👾</div></div>
+      <div class="card space" onclick="startLevel(3)"><h2>第三关</h2><p>打出拼音，保护火箭！</p><div class="emoji">🚀</div></div>
+    </div>
+    <div class="btnrow" style="margin-top:22px"><button class="smallbtn" onclick="go('start')">返回</button><button class="smallbtn ghostBtn" onclick="showReport()">查看学习报告</button></div>
+  </div>
+</section>
+
+<section id="game" class="screen">
+  <div class="scene" id="scene"></div>
+  <div class="topbar">
+    <div class="pill" id="levelName">第一关</div>
+    <div class="pill">题目：<span id="qCount">0</span>/<span id="qTotal">10</span></div>
+    <div class="pill">分数：<span id="score">0</span>　时间：<span id="time">10</span></div>
+  </div>
+  <div class="distance" id="distance" style="display:none"><div></div></div>
+  <div class="toast" id="toast">太棒了！</div>
+  <div class="fx" id="fx"></div>
+  <div class="hud">
+    <div class="qbox">
+      <div class="word" id="word">山</div>
+      <input class="answerInput" id="answer" placeholder="输入拼音，如 shan" autocomplete="off"/>
+    </div>
+    <div class="btnrow"><button class="smallbtn" onclick="check()">确定</button><button class="smallbtn" onclick="endLevel()">结束</button></div>
+  </div>
+</section>
+
+<section id="report" class="screen">
+  <div class="reportPanel">
+    <h1 class="title" style="font-size:42px">冒险完成！</h1>
+    <div class="reportGrid">
+      <div class="stat"><b>姓名</b><br><span id="rName">-</span></div>
+      <div class="stat"><b>班级</b><br><span id="rClass">-</span></div>
+      <div class="stat"><b>分数</b><br><span id="rScore">0</span></div>
+      <div class="stat"><b>正确率</b><br><span id="rAcc">0%</span></div>
+      <div class="stat"><b>答对</b><br><span id="rCorrect">0</span></div>
+      <div class="stat"><b>答错</b><br><span id="rWrong">0</span></div>
+    </div>
+    <h2>今天练过的字词</h2>
+    <div class="review" id="reviewList"></div>
+    <h2>今天答错</h2>
+    <div class="review" id="wrongList"></div>
+    <div class="btnrow" style="margin-top:22px">
+      <button onclick="submitToTeacher()">送给老师</button>
+      <button class="ghostBtn" onclick="go('map')">继续挑战</button>
+      <button class="ghostBtn" onclick="restartAll()">重新开始</button>
+    </div>
+    <div class="notice" id="submitStatus">老师提交功能需要先填入 Google Apps Script URL。</div>
+  </div>
+</section>
+
+<script>
+// ===== Google Sheets setup =====
+// Paste your Google Apps Script Web App URL here after deployment.
+// Example: const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/xxxx/exec";
+const GOOGLE_SCRIPT_URL = "";
+
+// ===== Word banks from uploaded 欢乐伙伴 2.0 P1/P2 word list =====
+// Current release rule:
+// P1 = 1A only; P2 = 2A only.
+// Level 1 = single characters only; Level 2 = phrases only; Level 3 = short sentences built from learnt words.
+const wordBanks = {
+  P1: {
+    single: [
+      {h:"衣",k:"yi",tone:"yī"},{h:"鱼",k:"yu",tone:"yú"},{h:"雨",k:"yu",tone:"yǔ"},{h:"一",k:"yi",tone:"yī"},
+      {h:"二",k:"er",tone:"èr"},{h:"五",k:"wu",tone:"wǔ"},{h:"耳",k:"er",tone:"ěr"},{h:"牙",k:"ya",tone:"yá"},
+      {h:"口",k:"kou",tone:"kǒu"},{h:"人",k:"ren",tone:"rén"},{h:"木",k:"mu",tone:"mù"},{h:"土",k:"tu",tone:"tǔ"},
+      {h:"马",k:"ma",tone:"mǎ"},{h:"八",k:"ba",tone:"bā"},{h:"你",k:"ni",tone:"nǐ"},{h:"我",k:"wo",tone:"wǒ"},
+      {h:"也",k:"ye",tone:"yě"},{h:"他",k:"ta",tone:"tā"},{h:"不",k:"bu",tone:"bù"},{h:"爸",k:"ba",tone:"bà"},
+      {h:"她",k:"ta",tone:"tā"},{h:"妈",k:"ma",tone:"mā"},{h:"女",k:"nv",tone:"nǚ"},{h:"儿",k:"er",tone:"ér"},
+      {h:"力",k:"li",tone:"lì"},{h:"禾",k:"he",tone:"hé"},{h:"几",k:"ji",tone:"jǐ"},{h:"七",k:"qi",tone:"qī"},
+      {h:"个",k:"ge",tone:"gè"},{h:"可",k:"ke",tone:"kě"},{h:"去",k:"qu",tone:"qù"},{h:"日",k:"ri",tone:"rì"},
+      {h:"子",k:"zi",tone:"zǐ"},{h:"车",k:"che",tone:"chē"},{h:"四",k:"si",tone:"sì"},{h:"十",k:"shi",tone:"shí"},
+      {h:"书",k:"shu",tone:"shū"},{h:"山",k:"shan",tone:"shān"},{h:"羊",k:"yang",tone:"yáng"},{h:"毛",k:"mao",tone:"máo"},
+      {h:"王",k:"wang",tone:"wáng"},{h:"三",k:"san",tone:"sān"},{h:"早",k:"zao",tone:"zǎo"},{h:"午",k:"wu",tone:"wǔ"},
+      {h:"田",k:"tian",tone:"tián"},{h:"刀",k:"dao",tone:"dāo"},{h:"在",k:"zai",tone:"zài"},{h:"上",k:"shang",tone:"shàng"},
+      {h:"下",k:"xia",tone:"xià"},{h:"大",k:"da",tone:"dà"},{h:"小",k:"xiao",tone:"xiǎo"},{h:"来",k:"lai",tone:"lái"},
+      {h:"开",k:"kai",tone:"kāi"},{h:"火",k:"huo",tone:"huǒ"},{h:"关",k:"guan",tone:"guān"},{h:"两",k:"liang",tone:"liǎng"},
+      {h:"长",k:["chang","zhang"],tone:"cháng / zhǎng"},{h:"广",k:"guang",tone:"guǎng"},{h:"多",k:"duo",tone:"duō"},{h:"少",k:"shao",tone:"shǎo"},
+      {h:"目",k:"mu",tone:"mù"},{h:"手",k:"shou",tone:"shǒu"},{h:"本",k:"ben",tone:"běn"},{h:"工",k:"gong",tone:"gōng"},
+      {h:"门",k:"men",tone:"mén"},{h:"见",k:"jian",tone:"jiàn"},{h:"又",k:"you",tone:"yòu"},{h:"头",k:"tou",tone:"tóu"},
+      {h:"牛",k:"niu",tone:"niú"},{h:"贝",k:"bei",tone:"bèi"},{h:"六",k:"liu",tone:"liù"},{h:"九",k:"jiu",tone:"jiǔ"},
+      {h:"什",k:"shen",tone:"shén"},{h:"么",k:"me",tone:"me"},{h:"文",k:"wen",tone:"wén"},{h:"月",k:"yue",tone:"yuè"},
+      {h:"天",k:"tian",tone:"tiān"},{h:"水",k:"shui",tone:"shuǐ"},{h:"寸",k:"cun",tone:"cùn"},{h:"正",k:"zheng",tone:"zhèng"},
+      {h:"反",k:"fan",tone:"fǎn"},{h:"白",k:"bai",tone:"bái"},{h:"古",k:"gu",tone:"gǔ"}
+    ],
+    phrase: [
+      {h:"爸爸",k:"baba",tone:"bà ba"},{h:"妈妈",k:"mama",tone:"mā ma"},{h:"山羊",k:"shanyang",tone:"shān yáng"},
+      {h:"太阳",k:"taiyang",tone:"tài yáng"},{h:"老师",k:"laoshi",tone:"lǎo shī"},{h:"早安",k:"zaoan",tone:"zǎo ān"},
+      {h:"上午",k:"shangwu",tone:"shàng wǔ"},{h:"下午",k:"xiawu",tone:"xià wǔ"},{h:"大小",k:"daxiao",tone:"dà xiǎo"},
+      {h:"上下",k:"shangxia",tone:"shàng xià"},{h:"开关",k:"kaiguan",tone:"kāi guān"},{h:"多少",k:"duoshao",tone:"duō shǎo"},
+      {h:"华文",k:"huawen",tone:"huá wén"},{h:"白云",k:"baiyun",tone:"bái yún"},{h:"火车",k:"huoche",tone:"huǒ chē"},
+      {h:"木马",k:"muma",tone:"mù mǎ"},{h:"雨衣",k:"yuyi",tone:"yǔ yī"},{h:"书本",k:"shuben",tone:"shū běn"}
+    ],
+    sentence: [
+      {h:"我是人",k:"woshiren",tone:"wǒ shì rén"},{h:"我有书",k:"woyoushu",tone:"wǒ yǒu shū"},
+      {h:"小鸟来了",k:"xiaoniaolaile",tone:"xiǎo niǎo lái le"},{h:"太阳来了",k:"taiyanglaile",tone:"tài yáng lái le"},
+      {h:"白云来了",k:"baiyunlaile",tone:"bái yún lái le"},{h:"我去上学",k:"woqushangxue",tone:"wǒ qù shàng xué"}
+    ]
+  },
+  P2: {
+    single: [
+      {h:"外",k:"wai",tone:"wài"},{h:"美",k:"mei",tone:"měi"},{h:"丑",k:"chou",tone:"chǒu"},{h:"新",k:"xin",tone:"xīn"},
+      {h:"卖",k:"mai",tone:"mài"},{h:"加",k:"jia",tone:"jiā"},{h:"亲",k:"qin",tone:"qīn"},{h:"过",k:"guo",tone:"guò"},
+      {h:"年",k:"nian",tone:"nián"},{h:"读",k:"du",tone:"dú"},{h:"级",k:"ji",tone:"jí"},{h:"班",k:"ban",tone:"bān"},
+      {h:"专",k:"zhuan",tone:"zhuān"},{h:"助",k:"zhu",tone:"zhù"},{h:"平",k:"ping",tone:"píng"},{h:"全",k:"quan",tone:"quán"},
+      {h:"福",k:"fu",tone:"fú"},{h:"时",k:"shi",tone:"shí"},{h:"表",k:"biao",tone:"biǎo"},{h:"演",k:"yan",tone:"yǎn"},
+      {h:"舞",k:"wu",tone:"wǔ"},{h:"龙",k:"long",tone:"lóng"},{h:"杯",k:"bei",tone:"bēi"},{h:"送",k:"song",tone:"sòng"},
+      {h:"主",k:"zhu",tone:"zhǔ"},{h:"汽",k:"qi",tone:"qì"},{h:"各",k:"ge",tone:"gè"},{h:"常",k:"chang",tone:"cháng"},
+      {h:"棵",k:"ke",tone:"kē"},{h:"树",k:"shu",tone:"shù"},{h:"林",k:"lin",tone:"lín"},{h:"森",k:"sen",tone:"sēn"},
+      {h:"蓝",k:"lan",tone:"lán"},{h:"绿",k:"lv",tone:"lǜ"},{h:"黄",k:"huang",tone:"huáng"},{h:"音",k:"yin",tone:"yīn"},
+      {h:"室",k:"shi",tone:"shì"},{h:"向",k:"xiang",tone:"xiàng"},{h:"路",k:"lu",tone:"lù"},{h:"远",k:"yuan",tone:"yuǎn"},
+      {h:"骑",k:"qi",tone:"qí"},{h:"行",k:["xing","hang"],tone:"xíng / háng"},{h:"桥",k:"qiao",tone:"qiáo"},{h:"等",k:"deng",tone:"děng"},
+      {h:"灯",k:"deng",tone:"dēng"},{h:"茶",k:"cha",tone:"chá"},{h:"糖",k:"tang",tone:"táng"},{h:"冰",k:"bing",tone:"bīng"},
+      {h:"医",k:"yi",tone:"yī"},{h:"病",k:"bing",tone:"bìng"},{h:"护",k:"hu",tone:"hù"},{h:"教",k:["jiao"],tone:"jiāo / jiào"},
+      {h:"种",k:["zhong"],tone:"zhǒng / zhòng"},{h:"阴",k:"yin",tone:"yīn"},{h:"晴",k:"qing",tone:"qíng"},{h:"热",k:"re",tone:"rè"},
+      {h:"闪",k:"shan",tone:"shǎn"},{h:"风",k:"feng",tone:"fēng"},{h:"蚂",k:"ma",tone:"mǎ"},{h:"蚁",k:"yi",tone:"yǐ"},
+      {h:"蜂",k:"feng",tone:"fēng"},{h:"蛙",k:"wa",tone:"wā"}
+    ],
+    phrase: [
+      {h:"新年",k:"xinnian",tone:"xīn nián"},{h:"年级",k:"nianji",tone:"nián jí"},{h:"舞龙",k:"wulong",tone:"wǔ lóng"},
+      {h:"表演",k:"biaoyan",tone:"biǎo yǎn"},{h:"汽水",k:"qishui",tone:"qì shuǐ"},{h:"朋友",k:"pengyou",tone:"péng you"},
+      {h:"非常",k:"feichang",tone:"fēi cháng"},{h:"树林",k:"shulin",tone:"shù lín"},{h:"蓝天",k:"lantian",tone:"lán tiān"},
+      {h:"绿叶",k:"lvye",tone:"lǜ yè"},{h:"黄色",k:"huangse",tone:"huáng sè"},{h:"运动",k:"yundong",tone:"yùn dòng"},
+      {h:"走路",k:"zoulu",tone:"zǒu lù"},{h:"行走",k:"xingzou",tone:"xíng zǒu"},{h:"美丽",k:"meili",tone:"měi lì"},
+      {h:"青菜",k:"qingcai",tone:"qīng cài"},{h:"星期",k:"xingqi",tone:"xīng qī"},{h:"医生",k:"yisheng",tone:"yī shēng"},
+      {h:"老师",k:"laoshi",tone:"lǎo shī"},{h:"阴天",k:"yintian",tone:"yīn tiān"},{h:"晴天",k:"qingtian",tone:"qíng tiān"},
+      {h:"蜜蜂",k:"mifeng",tone:"mì fēng"},{h:"青蛙",k:"qingwa",tone:"qīng wā"},{h:"地方",k:"difang",tone:"dì fang"}
+    ],
+    sentence: [
+      {h:"今天是晴天",k:"jintianshiqingtian",tone:"jīn tiān shì qíng tiān"},
+      {h:"我喜欢青菜",k:"woxihuanqingcai",tone:"wǒ xǐ huān qīng cài"},
+      {h:"小鸟在树上",k:"xiaoniaozaishushang",tone:"xiǎo niǎo zài shù shàng"},
+      {h:"蜜蜂飞来了",k:"mifengfeilaile",tone:"mì fēng fēi lái le"},
+      {h:"青蛙在池里",k:"qingwazaichili",tone:"qīng wā zài chí lǐ"}
+    ]
+  }
+};
+
+let grade="P1", level=1, current=null, score=0, time=10, maxTime=10, timer=null;
+let usedThisLevel=new Set(), levelQuestions=[], qIndex=0;
+let records=[], correctCount=0, wrongCount=0, totalCount=0;
+
+const config = {
+  P1:{level1:10,level2:8,level3:5},
+  P2:{level1:10,level2:10,level3:6}
+};
+const $=id=>document.getElementById(id);
+
+function initStars(){
+  const layer=$('stars'); layer.innerHTML="";
+  for(let i=0;i<60;i++){
+    const s=document.createElement('div');s.className='star';
+    s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';s.style.animationDelay=Math.random()*2+'s';
+    layer.appendChild(s);
+  }
+  for(let i=0;i<7;i++){
+    const c=document.createElement('div');c.className='cloud';c.textContent='☁';
+    c.style.top=(8+Math.random()*45)+'%';c.style.animationDuration=(18+Math.random()*18)+'s';c.style.animationDelay=(-Math.random()*18)+'s';
+    layer.appendChild(c);
+  }
+}
+function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active')}
+function showMap(g){
+  grade=g;
+  $('gradeNote').textContent = g==="P1" ? "当前：一年级 1A" : "当前：二年级 2A";
+  go('map');
+}
+function shuffle(arr){
+  const copy=[...arr];
+  for(let i=copy.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [copy[i],copy[j]]=[copy[j],copy[i]];
+  }
+  return copy;
+}
+function getBank(){
+  const b=wordBanks[grade] || wordBanks.P1;
+  if(level===1) return b.single;
+  if(level===2) return b.phrase;
+  return b.sentence;
+}
+function questionLimit(){
+  const c=config[grade] || config.P1;
+  return level===1?c.level1:level===2?c.level2:c.level3;
+}
+function syncDisplay(){
+  $('word').textContent=current.h;
+  const bc=$('balloonChar');
+  if(bc) bc.textContent=current.h;
+}
+function prepareQuestions(){
+  const bank=shuffle(getBank());
+  const limit=Math.min(questionLimit(), bank.length);
+  levelQuestions=bank.slice(0,limit);
+  qIndex=0;
+  $('qTotal').textContent=limit;
+  $('qCount').textContent=0;
+}
+function pick(){
+  if(qIndex>=levelQuestions.length){
+    endLevel();
+    return;
+  }
+  current=levelQuestions[qIndex];
+  usedThisLevel.add(current.h);
+  syncDisplay();
+  $('answer').value='';
+  $('qCount').textContent=qIndex+1;
+  setTimeout(()=>$('answer').focus(),50);
+}
+function startLevel(n){
+  level=n; usedThisLevel.clear(); score=0; $('score').textContent=score;
+  $('distance').style.display=n===2?'block':'none';
+  $('levelName').textContent=n===1?'第一关 单字气球':n===2?'第二关 词语迷宫':'第三关 短句太空';
+  renderScene(n); prepareQuestions(); go('game'); pick(); startTimer(n===1?10:n===2?12:22);
+}
+function renderScene(n){
+  const scene=$('scene');scene.className='scene';scene.innerHTML='';
+  if(n===1){
+    scene.innerHTML='<div class="hill"></div><div class="tree" style="left:8%">🌳</div><div class="tree" style="left:76%">🌲</div><div class="butterfly" style="top:28%;animation-delay:-2s">🦋</div><div class="butterfly" style="top:42%;animation-delay:-5s">🐦</div><div class="balloon"><div class="char" id="balloonChar"></div></div>';
+  }else if(n===2){
+    scene.innerHTML='<div class="chaseDanger" id="chaseDanger"></div><div class="mazePath"></div><div class="runner monster" id="monster">👾</div><div class="runner panda" id="panda">🐼</div><div class="chaseLabel" id="chaseLabel">距离安全</div>';
+  }else{
+    scene.innerHTML='<div class="spaceBar" id="spaceBar"><div></div></div><div class="spaceLabel" id="spaceLabel">陨石还很远</div><div class="laser" id="laser"></div><div class="rocket">🚀</div><div class="meteor" id="meteor">☄️</div><div class="warning" id="spaceWarning" style="display:none">小心陨石！</div>';
+  }
+}
+function startTimer(t){
+  clearInterval(timer); maxTime=t; time=t;
+  $('time').textContent=time; document.body.classList.remove('danger');
+  updateChase(); updateSpace();
+  timer=setInterval(()=>{
+    time--; $('time').textContent=time;
+    updateChase(); updateSpace();
+    if(time<=4){
+      document.body.classList.add('danger');
+      beep(level===2?120:160,80,'sawtooth');
+    }
+    if(time<=0){
+      clearInterval(timer);
+      markAnswer(false, "", "timeout");
+      failFx(true);
+      setTimeout(nextQuestion,950);
+    }
+  },1000);
+}
+function nextQuestion(){
+  qIndex++;
+  if(qIndex>=levelQuestions.length) endLevel();
+  else {
+    pick();
+    startTimer(level===1?10:level===2?12:22);
+  }
+}
+function updateChase(){
+  if(level!==2) return;
+  const percent=Math.max(0,Math.min(1,time/maxTime));
+  const bar=$('distance')?.querySelector('div');
+  if(bar) bar.style.width=(percent*100)+'%';
+  const monster=$('monster'), panda=$('panda'), danger=$('chaseDanger'), label=$('chaseLabel'), dist=$('distance');
+  if(monster&&panda){
+    const monsterLeft=8+(1-percent)*19;
+    const pandaLeft=33;
+    monster.style.left=monsterLeft+'%';
+    panda.style.left=pandaLeft+'%';
+    const gap=pandaLeft-monsterLeft;
+    const isDanger=gap<10;
+    monster.classList.toggle('close',isDanger);
+    panda.classList.toggle('scared',isDanger);
+    danger?.classList.toggle('on',isDanger);
+    dist?.classList.toggle('dangerBar',isDanger);
+    if(label){
+      if(gap<5) label.textContent='快被追上了！';
+      else if(gap<10) label.textContent='小怪很近！';
+      else label.textContent='距离安全';
+    }
+  }
+}
+function updateSpace(){
+  if(level!==3) return;
+  const percent=Math.max(0,Math.min(1,time/maxTime));
+  const bar=$('spaceBar')?.querySelector('div');
+  if(bar) bar.style.width=(percent*100)+'%';
+  const meteor=$('meteor'), label=$('spaceLabel'), warning=$('spaceWarning');
+  if(meteor){
+    const rightPos=12+(1-percent)*58;
+    meteor.style.right=rightPos+'%';
+    const danger=percent<.35;
+    meteor.classList.toggle('warningMeteor',danger);
+    if(warning) warning.style.display=danger?'block':'none';
+    if(label){
+      if(percent<.18) label.textContent='马上撞上了！';
+      else if(percent<.35) label.textContent='陨石很近！';
+      else label.textContent='陨石还很远';
+    }
+  }
+}
+function isCorrect(input, answer){
+  if(Array.isArray(answer)) return answer.includes(input);
+  return input===answer;
+}
+function normalizeInput(s){return s.trim().toLowerCase().replace(/\s/g,'').replace(/ü/g,'v')}
+function expectedKeyboard(q){return Array.isArray(q.k)?q.k.join(" / "):q.k}
+function classifyError(typed,q){
+  if(!typed) return "未作答";
+  if((q.h.includes("女")||q.tone.includes("ǚ")||q.tone.includes("ǜ")) && typed.includes("u") && !typed.includes("v")) return "ü→v 输入规则";
+  if(Array.isArray(q.k)) return "多音字";
+  if(Math.abs(typed.length - String(q.k).length)>=2) return "漏打或多打";
+  return "拼音输入错误";
+}
+function markAnswer(correct, typed, reason=""){
+  totalCount++;
+  if(correct) correctCount++; else wrongCount++;
+  const rec={
+    time:new Date().toISOString(),
+    grade, level,
+    question:current.h,
+    typed,
+    keyboard:expectedKeyboard(current),
+    tone:current.tone,
+    correct,
+    reason: correct ? "" : (reason==="timeout" ? "时间到" : classifyError(typed,current))
+  };
+  records.push(rec);
+}
+function check(){
+  const typed=normalizeInput($('answer').value);
+  const ok=isCorrect(typed,current.k);
+  clearInterval(timer);
+  markAnswer(ok,typed);
+  if(ok){
+    score+=10; $('score').textContent=score; successFx();
+  }else{
+    failFx(false);
+  }
+  setTimeout(nextQuestion,850);
+}
+function endLevel(){
+  clearInterval(timer);
+  go('map');
+  showReport();
+}
+function showReport(){
+  $('rName').textContent=$('studentName').value.trim()||"未填写";
+  $('rClass').textContent=$('studentClass').value;
+  $('rScore').textContent=score;
+  const acc=totalCount?Math.round(correctCount/totalCount*100):0;
+  $('rAcc').textContent=acc+"%";
+  $('rCorrect').textContent=correctCount;
+  $('rWrong').textContent=wrongCount;
+  const review=$('reviewList'); review.innerHTML="";
+  const seen=new Set();
+  records.forEach(r=>{
+    if(seen.has(r.question)) return;
+    seen.add(r.question);
+    review.appendChild(card(r.question,r.tone,"键盘："+r.keyboard));
+  });
+  const wrong=$('wrongList'); wrong.innerHTML="";
+  const wrongRecords=records.filter(r=>!r.correct);
+  if(wrongRecords.length===0){
+    wrong.appendChild(card("太棒了！","没有错题","继续保持"));
+  }else{
+    wrongRecords.forEach(r=>wrong.appendChild(card(r.question,r.tone,`你输入：${r.typed||"未作答"}<br>键盘：${r.keyboard}<br>${r.reason}`)));
+  }
+  go('report');
+}
+function card(h,tone,extra){
+  const div=document.createElement('div');div.className='reviewCard';
+  div.innerHTML=`<div class="han">${h}</div><div class="pin">${tone}</div><div style="font-family:system-ui,sans-serif;margin-top:6px">${extra}</div>`;
+  return div;
+}
+function restartAll(){
+  records=[];correctCount=0;wrongCount=0;totalCount=0;score=0;
+  $('score').textContent=0;go('start');
+}
+async function submitToTeacher(){
+  const status=$('submitStatus');
+  if(!GOOGLE_SCRIPT_URL){
+    status.textContent="还没有设置 Google Apps Script URL。先部署 Apps Script，再把 URL 粘贴到 HTML 里的 GOOGLE_SCRIPT_URL。";
+    return;
+  }
+  const payload={
+    timestamp:new Date().toISOString(),
+    name:$('studentName').value.trim()||"未填写",
+    class:$('studentClass').value,
+    grade,
+    score,
+    accuracy: totalCount?Math.round(correctCount/totalCount*100):0,
+    correctCount, wrongCount, totalCount,
+    wrongWords: records.filter(r=>!r.correct).map(r=>r.question).join("、"),
+    details: records
+  };
+  try{
+    status.textContent="正在送给老师……";
+    await fetch(GOOGLE_SCRIPT_URL,{
+      method:"POST",
+      mode:"no-cors",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(payload)
+    });
+    status.textContent="已送出。如果 Apps Script 设置正确，Google Sheet 会新增记录。";
+  }catch(e){
+    status.textContent="提交失败。请检查 Apps Script URL。";
+  }
+}
+function toast(t){$('toast').textContent=t;$('toast').classList.remove('show');void $('toast').offsetWidth;$('toast').classList.add('show')}
+function successFx(){
+  beep(720,90,'sine'); setTimeout(()=>beep(1040,90,'sine'),90);
+  if(level===2){
+    time=Math.min(maxTime,time+2);$('time').textContent=time;updateChase();
+    const panda=$('panda'); if(panda){panda.style.transform='translateX(38px) translateY(-10px) scale(1.08)';setTimeout(()=>panda.style.transform='',220)}
+    toast('冲刺！ '+current.tone);
+  }else if(level===3){
+    fireLaser();time=Math.min(maxTime,time+2);$('time').textContent=time;updateSpace();toast('打掉陨石！ '+current.tone);
+  }else{
+    toast('太棒了！ '+current.tone);
+  }
+  particles(innerWidth/2,innerHeight/2,'#7ee081')
+}
+function failFx(timeout=false){
+  if(level===1){
+    boom();toast((timeout?'时间到！ ':'差一点！ ')+current.tone);
+  }else if(level===2){
+    time=Math.max(0,time-2);$('time').textContent=time;updateChase();monsterSound();
+    toast(time<=0?'被追上了！ '+current.tone:'小怪靠近了！ '+current.tone);
+  }else{
+    time=Math.max(0,time-2);$('time').textContent=time;updateSpace();
+    if(timeout||time<=0){alarmBoom();toast('陨石撞上了！ '+current.tone)}
+    else{beep(260,120,'sawtooth',.1);toast('陨石更近了！ '+current.tone)}
+  }
+  document.body.classList.remove('shake');void document.body.offsetWidth;document.body.classList.add('shake');
+}
+function fireLaser(){
+  const laser=$('laser'),meteor=$('meteor');
+  if(laser){laser.classList.remove('fire');void laser.offsetWidth;laser.classList.add('fire')}
+  if(meteor){meteor.style.transform='scale(.15) rotate(-160deg)';meteor.style.opacity='0';setTimeout(()=>{meteor.style.opacity='1';meteor.style.transform=''},500)}
+  beep(900,60,'square',.08);setTimeout(()=>beep(1300,70,'sine',.06),70);
+}
+function particles(x,y,color){
+  const fx=$('fx');
+  for(let i=0;i<32;i++){
+    const p=document.createElement('div');p.className='particle';p.style.left=x+'px';p.style.top=y+'px';p.style.background=color||'#ffd166';
+    const ang=Math.random()*Math.PI*2,r=60+Math.random()*150;
+    p.style.setProperty('--x',Math.cos(ang)*r+'px');p.style.setProperty('--y',Math.sin(ang)*r+'px');
+    fx.appendChild(p);setTimeout(()=>p.remove(),800);
+  }
+}
+function beep(freq=440,dur=100,type='sine',vol=.08){
+  try{
+    const ctx=window.ctx||(window.ctx=new (window.AudioContext||window.webkitAudioContext)());
+    if(ctx.state==='suspended') ctx.resume();
+    const o=ctx.createOscillator(),g=ctx.createGain();
+    o.type=type;o.frequency.value=freq;g.gain.value=vol;o.connect(g);g.connect(ctx.destination);o.start();
+    g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+dur/1000);o.stop(ctx.currentTime+dur/1000);
+  }catch(e){}
+}
+function boom(){beep(90,230,'sawtooth',.13);setTimeout(()=>beep(45,260,'square',.1),80);particles(innerWidth/2,innerHeight/2,'#ff6b9d')}
+function monsterSound(){beep(130,120,'sawtooth',.12);setTimeout(()=>beep(95,180,'sawtooth',.12),110)}
+function alarmBoom(){beep(520,80,'square',.09);setTimeout(()=>beep(220,180,'sawtooth',.1),110);particles(innerWidth*.68,innerHeight*.38,'#66e3ff')}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&$('game').classList.contains('active'))check()});
+document.addEventListener('click',()=>{try{const ctx=window.ctx||(window.ctx=new (window.AudioContext||window.webkitAudioContext)()); if(ctx.state==='suspended') ctx.resume();}catch(e){}},{once:true});
+initStars();
+</script>
+</body>
+</html>
