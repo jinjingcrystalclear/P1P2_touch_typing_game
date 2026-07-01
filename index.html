@@ -307,11 +307,17 @@ const wordBanks = {
       {h:"华文",k:"huawen",tone:"huá wén"},{h:"白云",k:"baiyun",tone:"bái yún"},{h:"火车",k:"huoche",tone:"huǒ chē"},
       {h:"木马",k:"muma",tone:"mù mǎ"},{h:"雨衣",k:"yuyi",tone:"yǔ yī"},{h:"书本",k:"shuben",tone:"shū běn"}
     ],
+      {h:"一个人",k:"yigeren",tone:"yí gè rén"},{h:"一张口",k:"yizhangkou",tone:"yì zhāng kǒu"}, {h:"两只耳朵",k:"liangzhierduo",tone:"liǎng zhī ěr duo"},  {h:"一双手",k:"yishuangshou",tone:"yì shuāng shǒu"},  {h:"上和下",k:"shanghexia",tone:"shàng hé xià"},
+  {h:"大和小",k:"dahexiao",tone:"dà hé xiǎo"},
+  {h:"来和去",k:"laihequ",tone:"lái hé qù"}],
+
     sentence: [
-      {h:"我是人",k:"woshiren",tone:"wǒ shì rén"},{h:"我有书",k:"woyoushu",tone:"wǒ yǒu shū"},
-      {h:"小鸟来了",k:"xiaoniaolaile",tone:"xiǎo niǎo lái le"},{h:"太阳来了",k:"taiyanglaile",tone:"tài yáng lái le"},
-      {h:"白云来了",k:"baiyunlaile",tone:"bái yún lái le"},{h:"我去上学",k:"woqushangxue",tone:"wǒ qù shàng xué"}
-    ]
+       {h:"哥哥喜欢读书",k:"gegexihuandushu",tone:"gē ge xǐ huān dú shū"}, {h:"我七点上学",k:"woqidianshangxue",tone:"wǒ qī diǎn shàng xué"},
+  {h:"老师早安",k:"laoshizaoan",tone:"lǎo shī zǎo ān"},
+  {h:"我自己玩",k:"wozijiwan",tone:"wǒ zì jǐ wán"}, {h:"今天有华文课",k:"jintianyouhuawenke",tone:"jīn tiān yǒu huá wén kè"}, {h:"我读了五个句子",k:"wodulewugejuzi",tone:"wǒ dú le wǔ gè jù zi"},
+  {h:"我可以喝水吗",k:"wokeyiheshuima",tone:"wǒ kě yǐ hē shuǐ ma"},
+  {h:"我可以去厕所吗",k:"wokeyiqucesuoma",tone:"wǒ kě yǐ qù cè suǒ ma"}, {h:"我也喜欢吃鱼",k:"woyexihuanchiyu",tone:"wǒ yě xǐ huān chī yú"}
+]
   },
   P2: {
     single: [
@@ -340,14 +346,36 @@ const wordBanks = {
       {h:"走路",k:"zoulu",tone:"zǒu lù"},{h:"行走",k:"xingzou",tone:"xíng zǒu"},{h:"美丽",k:"meili",tone:"měi lì"},
       {h:"青菜",k:"qingcai",tone:"qīng cài"},{h:"星期",k:"xingqi",tone:"xīng qī"},{h:"医生",k:"yisheng",tone:"yī shēng"},
       {h:"老师",k:"laoshi",tone:"lǎo shī"},{h:"阴天",k:"yintian",tone:"yīn tiān"},{h:"晴天",k:"qingtian",tone:"qíng tiān"},
-      {h:"蜜蜂",k:"mifeng",tone:"mì fēng"},{h:"青蛙",k:"qingwa",tone:"qīng wā"},{h:"地方",k:"difang",tone:"dì fang"}
+      {h:"蜜蜂",k:"mifeng",tone:"mì fēng"},{h:"青蛙",k:"qingwa",tone:"qīng wā"},{h:"地方",k:"difang",tone:"dì fang"},  {h:"新年到了",k:"xinniandaole",tone:"xīn nián dào le"},
+  {h:"新年快乐",k:"xinniankuaile",tone:"xīn nián kuài lè"},
+  {h:"大吉大利",k:"dajidali",tone:"dà jí dà lì"},
+  {h:"岁岁平安",k:"suisuipingan",tone:"suì suì píng ān"},
+  {h:"年年有余",k:"niannianyouyu",tone:"nián nián yǒu yú"},
     ],
     sentence: [
       {h:"今天是晴天",k:"jintianshiqingtian",tone:"jīn tiān shì qíng tiān"},
-      {h:"我喜欢青菜",k:"woxihuanqingcai",tone:"wǒ xǐ huān qīng cài"},
+      {h:"长和短大和小",k:"changheduandahexiao",tone:"cháng hé duǎn, dà hé xiǎo"},
+  {h:"里和外正和反",k:"lihewai zhenghefan".replace(/\s/g,""),tone:"lǐ hé wài, zhèng hé fǎn"},
+  {h:"美和丑新和旧",k:"meihechouxinhejiu",tone:"měi hé chǒu, xīn hé jiù"},
+  {h:"父亲和母亲",k:"fuqinhemuqin",tone:"fù qīn hé mǔ qīn"},
+  {h:"这些衣服合适吗",k:"zhexieyifu heshima".replace(/\s/g,""),tone:"zhè xiē yī fu hé shì ma"},
+  {h:"你来试一试",k:"nilaishiyishi",tone:"nǐ lái shì yi shì"},
+  {h:"这件衣服太大了",k:"zhejianyifutaidale",tone:"zhè jiàn yī fu tài dà le"},
+  {h:"这件衣服有点儿短",k:"zhejianyifuyoudianerduan",tone:"zhè jiàn yī fu yǒu diǎn er duǎn"},
+  {h:"这双鞋子很合适",k:"zheshuangxiezi h enheshi".replace(/\s/g,"").replace("h en","hen"),tone:"zhè shuāng xié zi hěn hé shì"},
+  {h:"你长大了",k:"nizhangdale",tone:"nǐ zhǎng dà le"},
+  {h:"我读二年级了",k:"woduer nianjile".replace(/\s/g,""),tone:"wǒ dú èr nián jí le"},
       {h:"小鸟在树上",k:"xiaoniaozaishushang",tone:"xiǎo niǎo zài shù shàng"},
       {h:"蜜蜂飞来了",k:"mifengfeilaile",tone:"mì fēng fēi lái le"},
-      {h:"青蛙在池里",k:"qingwazaichili",tone:"qīng wā zài chí lǐ"}
+      {h:"青蛙在池里",k:"qingwazaichili",tone:"qīng wā zài chí lǐ"}, {h:"我们全家一起大扫除",k:"womenquanjia yiqidasaochu".replace(/\s/g,""),tone:"wǒ men quán jiā yì qǐ dà sǎo chú"},
+  {h:"我在门上贴福字",k:"wozaimenshangtiefuzi",tone:"wǒ zài mén shàng tiē fú zì"},
+  {h:"我们表演了舞龙",k:"womenbiaoyanlewulong",tone:"wǒ men biǎo yǎn le wǔ lóng"},
+  {h:"过新年真开心啊",k:"guoxinnianzhenkaixin a".replace(/\s/g,""),tone:"guò xīn nián zhēn kāi xīn a"},  {h:"你先画一个圆形",k:"nixianhuayigeyuanxing",tone:"nǐ xiān huà yí gè yuán xíng"}, {h:"我每天坐巴士来学校",k:"womeitianzuobashilaixuexiao",tone:"wǒ měi tiān zuò bā shì lái xué xiào"},  {h:"我要喝奶茶",k:"woyao henaicha".replace(/\s/g,""),tone:"wǒ yào hē nǎi chá"},
+  {h:"我要吃炒饭",k:"woyaochichaofan",tone:"wǒ yào chī chǎo fàn"},
+  {h:"我要吃青菜",k:"woyaochiqingcai",tone:"wǒ yào chī qīng cài"},
+  {h:"我要喝温水",k:"woyaohewenshui",tone:"wǒ yào hē wēn shuǐ"},
+  {h:"你喝咖啡我喝豆奶",k:"nihekafeiwohedounai",tone:"nǐ hē kā fēi, wǒ hē dòu nǎi"},
+  {h:"你去排队我去找座位",k:"niqupaiduiwoquzhaozuowei",tone:"nǐ qù pái duì, wǒ qù zhǎo zuò wèi"}
     ]
   }
 };
@@ -464,7 +492,7 @@ function nextQuestion(){
   if(qIndex>=levelQuestions.length) endLevel();
   else {
     pick();
-    startTimer(level===1?10:level===2?12:22);
+    startTimer(level===1?10:level===2?20:35);
   }
 }
 function updateChase(){
