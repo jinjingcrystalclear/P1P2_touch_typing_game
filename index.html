@@ -305,8 +305,7 @@ const wordBanks = {
       {h:"上午",k:"shangwu",tone:"shàng wǔ"},{h:"下午",k:"xiawu",tone:"xià wǔ"},{h:"大小",k:"daxiao",tone:"dà xiǎo"},
       {h:"上下",k:"shangxia",tone:"shàng xià"},{h:"开关",k:"kaiguan",tone:"kāi guān"},{h:"多少",k:"duoshao",tone:"duō shǎo"},
       {h:"华文",k:"huawen",tone:"huá wén"},{h:"白云",k:"baiyun",tone:"bái yún"},{h:"火车",k:"huoche",tone:"huǒ chē"},
-      {h:"木马",k:"muma",tone:"mù mǎ"},{h:"雨衣",k:"yuyi",tone:"yǔ yī"},{h:"书本",k:"shuben",tone:"shū běn"}
-    ],
+      {h:"木马",k:"muma",tone:"mù mǎ"},{h:"雨衣",k:"yuyi",tone:"yǔ yī"},{h:"书本",k:"shuben",tone:"shū běn"},
       {h:"一个人",k:"yigeren",tone:"yí gè rén"},{h:"一张口",k:"yizhangkou",tone:"yì zhāng kǒu"}, {h:"两只耳朵",k:"liangzhierduo",tone:"liǎng zhī ěr duo"},  {h:"一双手",k:"yishuangshou",tone:"yì shuāng shǒu"},  {h:"上和下",k:"shanghexia",tone:"shàng hé xià"},
   {h:"大和小",k:"dahexiao",tone:"dà hé xiǎo"},
   {h:"来和去",k:"laihequ",tone:"lái hé qù"}],
@@ -406,7 +405,7 @@ function initStars(){
 function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active')}
 function showMap(g){
   grade=g;
-  $('gradeNote').textContent = g==="P1" ? "当前：一年级 1A" : "当前：二年级 2A";
+  $('gradeNote').textContent = "请选择要挑战的关卡！";
   go('map');
 }
 function shuffle(arr){
